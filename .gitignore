@@ -25,7 +25,7 @@ xv6memfs.img
 # other generated files
 bootother
 initcode
-TAGS
+tags
 .gdbinit
 fs/
 kernel/vectors.S
@@ -39,4 +39,3 @@ initcode
 user/bin/
 tools/mkfs
 version
-
