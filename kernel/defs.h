@@ -105,10 +105,14 @@ void            procdump(void);
 void            scheduler(void) __attribute__((noreturn));
 void            sched(void);
 void            sleep(void*, struct spinlock*);
+void            sleep2(void*, lock_t*);
 void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
+void            wakeup2(void*);
 void            yield(void);
+int             clone(void(*fcn)(void*), void *, void*);
+int             join(void**);
 
 // swtch.S
 void            swtch(struct context**, struct context*);
