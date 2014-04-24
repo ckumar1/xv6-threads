@@ -134,7 +134,7 @@ int sys_sleepcv(void) {
     return -1;
   lock_t *lock = (lock_t *)temp;
 
-  sleepcv(cv, lock);
+  sleep2(cv, lock);
 
   return 0;
 }
@@ -145,7 +145,7 @@ int sys_wakecv(void) {
   if(argptr(0, (void *)&cv, sizeof(void *)) < 0)
     return -1;
 
-  wakeupcv(cv);
+  wakeup2(cv);
 
   return 0;
 }
