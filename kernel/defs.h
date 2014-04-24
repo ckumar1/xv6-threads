@@ -14,9 +14,6 @@ typedef struct {
   uint flag;
 } lock_t;
 
-typedef struct {
-  lock_t *lock;
-} cond_t;
 
 // bio.c
 void            binit(void);

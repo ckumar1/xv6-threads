@@ -25,7 +25,5 @@ int sys_write(void);
 int sys_uptime(void);
 int sys_clone(void);
 int sys_join(void);
-int sys_sleepcv(void);
-int sys_wakecv(void);
 
 #endif // _SYSFUNC_H_

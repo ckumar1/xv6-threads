@@ -122,7 +122,6 @@ growproc(int n)
   proc->sz = sz;
   switchuvm(proc);
 
-  //TODO
   acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->pgdir == temp){
@@ -465,7 +464,6 @@ procdump(void)
 // is copied into the argument stack .
 
 int join(void **stack) {
-  // TODO
 
   struct proc *p;
   int hasChildthreads, pid;
@@ -531,7 +529,6 @@ int join(void **stack) {
 // As with fork(), the PID of the new thread is returned to the parent.
 
 int clone(void(*fcn)(void*), void *arg, void *stack) {
-  // TODO
   int i, pid;
   struct proc *np;
 
