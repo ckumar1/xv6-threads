@@ -88,3 +88,21 @@ malloc(uint nbytes)
         return 0;
   }
 }
+
+// Copy process state from p.
+int thread_create(void (*start_routine)(void *), void *arg)
+{
+    void *stack;
+    stack = malloc(2 * PGSIZE);
+    if ((uint)stack % PGSIZE)
+        stack = stack + (PGSIZE - (uint)stack % PGSIZE);
+    return (clone(start_routine, arg, stack));
+}
+
+int thread_join()
+{
+    void *stack;
+    int ret = join((&stack));
+    free(stack);
+    return ret;
+}

@@ -117,17 +117,4 @@ void lock_release(lock_t *lock) {
   xchg(&lock->flag, 0);
 }
 
-int thread_create(void (*start_routine)(void*), void *arg) {
-  void *stack;
-  stack = malloc(2*PGSIZE);
-  if((uint)stack % PGSIZE)
-    stack = stack + (PGSIZE - (uint)stack % PGSIZE);
-  return (clone(start_routine, arg, stack));
-}
 
-int thread_join() {
-  void *stack;
-  int ret = join((&stack));
-  free(stack);
-  return ret;
-}
