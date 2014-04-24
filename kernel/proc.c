@@ -466,6 +466,46 @@ int join(void **stack) {
 
 int clone(void(*fcn)(void*), void *arg, void *stack) {
   // TODO
+  int i, pid;
+  struct proc *np;
 
-  return -1;
+  // Allocate process.
+  if((np = allocproc()) == 0)
+    return -1;
+
+  // Copy process state from p.
+  np->pgdir = proc->pgdir; //Share address space with p
+  np->sz = proc->sz;
+  np->parent = proc;
+  *np->tf = *proc->tf;
+  np->stack = stack;
+
+  // initialize stack variables
+  void *stackArg, *stackRet;
+
+  stackRet = stack + 4096 - 2 * sizeof(void*);
+  *(uint *)stackRet = 0xFFFFFFFF;
+
+  stackArg = stack + 4096 - sizeof(void*);
+  *(uint *)stackArg = (uint)arg;
+
+  // Set stack pointer register
+  np->tf->esp = (int)stack;
+  memmove((void *)np->tf->esp, stack, PGSIZE);
+  np->tf->esp += PGSIZE - 2 * sizeof(void *);
+  np->tf->ebp = np->tf->esp;
+  np->tf->eip = (int)fcn;
+
+  for (i = 0; i < NOFILE; i++) {
+    if(proc->ofile[i])
+      np->ofile[i] = filedup(proc->ofile[i]);
+  }
+  np->cwd = idup(proc->cwd);
+  
+  np->tf->eax = 0;
+  np->state = RUNNABLE;
+  safestrcpy(np->name, proc->name, sizeof(proc->name));
+
+  pid = np->pid;
+  return pid;
 }
