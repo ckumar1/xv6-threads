@@ -467,7 +467,57 @@ procdump(void)
 int join(void **stack) {
   // TODO
 
-  return -1;
+  struct proc *p;
+  int hasChildthreads, pid;
+
+  acquire(&ptable.lock);
+  for(;;) {
+    hasChildthreads = 0;
+
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      // skip processes that are not child threads
+      // Skip if process p is:
+      //  - not a child
+      //  - not a child thread (shared address space)
+      //  - the calling thread itself 
+      if (p->parent != proc || p->pgdir != proc->pgdir || proc->pid == p->pid)
+        continue;
+      //Passing the prior conditions means p is a child thread of proc
+      hasChildthreads = 1;
+
+      if (p->state == ZOMBIE) {
+        // get pid of zombie child to return
+        pid = p->pid;
+        // int *tempAddr = 0x1FD8;
+
+        void *stackAddr = (void *)p->parent->tf->esp + 7*sizeof(void *);
+        *(uint *)stackAddr = p->tf->ebp;
+        *(uint *)stackAddr += 3 * sizeof(void *) - PGSIZE;
+
+        kfree(p->kstack);
+        p->kstack = 0;
+        p->state = UNUSED;
+        p->pid = 0;
+        p->parent = 0;
+        p->name[0] = 0;
+        p->killed = 0;
+        // Get stack of the zombie child thread to return
+        *stack = p->stack;
+        // *tempAddr = pid;
+        release(&ptable.lock);
+        return pid;
+      }
+    }
+    
+    if (!hasChildthreads || proc->killed) {
+      release(&ptable.lock);
+      return -1;
+    }
+
+    sleep(proc, &ptable.lock);
+
+  }
+  return 0;
 }
 
 // This call creates a new kernel thread which shares
