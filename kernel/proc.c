@@ -488,7 +488,7 @@ int join(void **stack) {
       if (p->state == ZOMBIE) {
         // get pid of zombie child to return
         pid = p->pid;
-        // int *tempAddr = 0x1FD8;
+        int *tempAddr = 0x1FD8;
 
         void *stackAddr = (void *)p->parent->tf->esp + 7*sizeof(void *);
         *(uint *)stackAddr = p->tf->ebp;
@@ -503,17 +503,18 @@ int join(void **stack) {
         p->killed = 0;
         // Get stack of the zombie child thread to return
         *stack = p->stack;
-        // *tempAddr = pid;
+        *tempAddr = pid;
         release(&ptable.lock);
         return pid;
       }
     }
-    
+    // No point waiting if we don't have any children.
     if (!hasChildthreads || proc->killed) {
       release(&ptable.lock);
       return -1;
     }
 
+    // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(proc, &ptable.lock);
 
   }
