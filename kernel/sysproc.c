@@ -94,7 +94,6 @@ sys_uptime(void)
 // Check for error conditions before running actual syscall
 
 int sys_clone(void) {
-  // TODO
   void *fcn, *arg, *stack;
 
   if(argptr(0, (void *)&fcn, sizeof(void *)) < 0)
@@ -116,13 +115,17 @@ int sys_clone(void) {
 }
 
 int sys_join(void) {
-  // TODO
+  void **stack;
 
-  return (-1);
+  if(argptr(0, (void *)&stack, sizeof(void *)) < 0)
+    return -1;
+
+  int rt = join(stack);
+  return rt;
 }
 
 int sys_sleepcv(void) {
-
+  // TODO
   return (-1);
 }
 
