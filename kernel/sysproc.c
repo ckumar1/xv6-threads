@@ -95,8 +95,24 @@ sys_uptime(void)
 
 int sys_clone(void) {
   // TODO
+  void *fcn, *arg, *stack;
 
-  return -1;
+  if(argptr(0, (void *)&fcn, sizeof(void *)) < 0)
+    return -1;
+
+  if(argptr(1, (void *)&arg, sizeof(void *)) < 0)
+    return -1;
+
+  if(argptr(2, (void *)&stack, sizeof(void *)) < 0)
+    return -1;
+
+  if ((uint)stack % PGSIZE != 0)
+    return -1;
+
+  if ((uint)proc->sz - (uint)stack == PGSIZE/2)
+    return -1;
+
+  return clone(fcn, arg, stack);
 }
 
 int sys_join(void) {
