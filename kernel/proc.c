@@ -18,6 +18,7 @@ extern void forkret(void);
 extern void trapret(void);
 
 static void wakeup1(void *chan);
+struct spinlock lgp;
 
 void
 pinit(void)
@@ -107,6 +108,8 @@ int
 growproc(int n)
 {
   uint sz;
+  struct proc *p;
+  pde_t *temp = proc->pgdir;
 
   sz = proc->sz;
   if(n > 0){
@@ -118,6 +121,18 @@ growproc(int n)
   }
   proc->sz = sz;
   switchuvm(proc);
+
+  //TODO
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pgdir == temp){
+      p->sz = sz;
+      acquire(&lgp);
+      switchuvm(p);
+      release(&lgp);
+     }
+  }
+  release(&ptable.lock);
   return 0;
 }
 
