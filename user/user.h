@@ -45,11 +45,11 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
-int thread_create(void (*start_routine)(void*), void *);
-int thread_join();
 void lock_init(lock_t *);
 void lock_acquire(lock_t *); 
 void lock_release(lock_t *);
+int thread_create(void (*start_routine)(void*), void *);
+int thread_join();
 
 #endif // _USER_H_
 
