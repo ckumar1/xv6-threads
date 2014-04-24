@@ -479,7 +479,7 @@ int join(void **stack) {
       // Skip if process p is:
       //  - not a child
       //  - not a child thread (shared address space)
-      //  - the calling thread itself
+      //  - the calling thread itself 
       if (p->parent != proc || p->pgdir != proc->pgdir || proc->pid == p->pid)
         continue;
       //Passing the prior conditions means p is a child thread of proc
@@ -488,7 +488,7 @@ int join(void **stack) {
       if (p->state == ZOMBIE) {
         // get pid of zombie child to return
         pid = p->pid;
-        int *tempAddr = 0x1FD8;
+        int *tmp = (int*) 0x1FD8;
 
         void *stackAddr = (void *)p->parent->tf->esp + 7*sizeof(void *);
         *(uint *)stackAddr = p->tf->ebp;
@@ -503,7 +503,7 @@ int join(void **stack) {
         p->killed = 0;
         // Get stack of the zombie child thread to return
         *stack = p->stack;
-        *tempAddr = pid;
+        *tmp = pid;
         release(&ptable.lock);
         return pid;
       }
@@ -567,7 +567,7 @@ int clone(void(*fcn)(void*), void *arg, void *stack) {
       np->ofile[i] = filedup(proc->ofile[i]);
   }
   np->cwd = idup(proc->cwd);
-
+  
   np->tf->eax = 0;
   np->state = RUNNABLE;
   safestrcpy(np->name, proc->name, sizeof(proc->name));
