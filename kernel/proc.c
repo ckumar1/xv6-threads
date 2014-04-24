@@ -488,7 +488,7 @@ int join(void **stack) {
       if (p->state == ZOMBIE) {
         // get pid of zombie child to return
         pid = p->pid;
-        int *tempAddr = 0x1FD8;
+        int *tmp = (int*) 0x1FD8;
 
         void *stackAddr = (void *)p->parent->tf->esp + 7*sizeof(void *);
         *(uint *)stackAddr = p->tf->ebp;
@@ -503,7 +503,7 @@ int join(void **stack) {
         p->killed = 0;
         // Get stack of the zombie child thread to return
         *stack = p->stack;
-        *tempAddr = pid;
+        *tmp = pid;
         release(&ptable.lock);
         return pid;
       }
